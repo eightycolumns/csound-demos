@@ -1,0 +1,15 @@
+#include "plugin/adsr-env"
+
+instr buzzer
+  iDur = p3
+  iAmp = p4
+  iCps = p5
+
+  aSaw oscil iAmp, iCps, giSawFt, $SOFT_OSC_START
+
+  kAmpEnv AdsrEnv 0.01, 0.1, 0.75, 0.2
+  kLpEnv AdsrEnv 0.001, 0.1, 0.25, 0.2
+  aOut moogladder aSaw * kAmpEnv, iCps * 8 * kLpEnv, 0
+
+  outs aOut, aOut
+endin

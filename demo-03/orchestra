@@ -1,0 +1,11 @@
+nchnls = 2
+
+#define SOFT_OSC_START # 0.00 #
+#define HARD_OSC_START # 0.25 #
+
+giFtLen pow 2, 16
+giSinFt ftgenonce 0, 0, giFtLen, 10, 1
+giSawFt ftgenonce 0, 0, giFtLen, 7, 1, giFtLen, -1
+//giSaw ftgenonce 0, 0, pow(2, 16), 10, 1, 1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9
+
+#include "instrument/buzzer"

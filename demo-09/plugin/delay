@@ -1,0 +1,27 @@
+#ifndef DELAY
+#define DELAY # 1 #
+
+opcode Delay, aa, aaiii
+  aDryL, aDryR, iN, iDelayGain, iDelayTime xin
+
+  if (iN > 0) then
+    aDryL, aDryR Gain aDryL, aDryR, iDelayGain * iN
+
+    iDelayTime *= iN
+
+    aDelayL delay aDryL, iDelayTime
+    aDelayR delay aDryR, iDelayTime
+
+    aRestL, aRestR Delay aDryL, aDryR, iN - 1, iDelayGain, iDelayTime
+
+    aWetL = aDelayL + aRestL
+    aWetR = aDelayR + aRestR
+  else
+    aWetL = 0
+    aWetR = 0
+  endif
+
+  xout aWetL, aWetR
+endop
+
+#end

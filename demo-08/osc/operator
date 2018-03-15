@@ -1,0 +1,12 @@
+#ifndef OPERATOR
+#define OPERATOR # 1 #
+
+opcode Operator, a, kai
+  kCps, aModulator, iOscStart xin
+
+  aCarrier tablei phasor(kCps) + aModulator, giSinFt, 1, iOscStart, 1
+
+  xout aCarrier
+endop
+
+#end

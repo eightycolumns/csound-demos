@@ -1,0 +1,12 @@
+#ifndef SAW
+#define SAW # 1 #
+
+opcode Saw, a, ii
+  iAmp, iCps xin
+
+  aSaw vco2 iAmp, iCps, 0, 0, 0
+
+  xout aSaw
+endop
+
+#end

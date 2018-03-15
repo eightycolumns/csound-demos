@@ -1,0 +1,28 @@
+#ifndef HI_HAT_DELAY_BUS
+#define HI_HAT_DELAY_BUS # 1 #
+
+#include "plugin/gain"
+
+gaHiHatDelayBusL init 0
+gaHiHatDelayBusR init 0
+
+opcode ToHiHatDelayBus, 0, aai
+  aInL, aInR, iSendLevel xin
+
+  aInL, aInR Gain aInL, aInR, iSendLevel
+
+  gaHiHatDelayBusL += aInL
+  gaHiHatDelayBusR += aInR
+endop
+
+opcode FromHiHatDelayBus, aa, 0
+  aOutL = gaHiHatDelayBusL
+  aOutR = gaHiHatDelayBusR
+
+  gaHiHatDelayBusL = 0
+  gaHiHatDelayBusR = 0
+
+  xout aOutL, aOutR
+endop
+
+#end

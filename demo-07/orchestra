@@ -1,0 +1,25 @@
+nchnls = 2
+
+#define MIN_MIDI_NOTE # 0 #
+#define MAX_MIDI_NOTE # 127 #
+
+#define MIN_MIDI_VELO # 0 #
+#define MAX_MIDI_VELO # 127 #
+
+#define SOFT_OSC_START # 0.00 #
+#define HARD_OSC_START # 0.25 #
+#define RAND_OSC_START # rnd(1) #
+
+giFtLen pow 2, 16
+giSinFt ftgenonce 0, 0, giFtLen, 10, 1
+
+gkPulse init 0
+
+#include "instrument/bass"
+#include "instrument/kick"
+#include "instrument/metronome"
+
+#include "aux/short-reverb"
+#include "aux/long-reverb"
+
+#include "aux/main-mix"

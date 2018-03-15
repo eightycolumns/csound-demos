@@ -1,0 +1,8 @@
+nchnls = 2
+
+#define SOFT_OSC_START # 0.00 #
+#define HARD_OSC_START # 0.25 #
+
+giSin ftgenonce 0, 0, pow(2, 16), 10, 1
+
+#include "instrument/beeper"

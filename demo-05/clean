@@ -1,0 +1,12 @@
+#!/bin/bash
+
+main() {
+  readonly TITLE=demo-05
+
+  readonly IMAGE=eightycolumns/csound:${TITLE}
+  readonly WORKDIR=/home/csound/${TITLE}
+
+  docker run --rm -v "${PWD}:${WORKDIR}" -w "${WORKDIR}" "${IMAGE}" make clean
+}
+
+[ "${BASH_SOURCE[0]}" == "$0" ] && main "$@"

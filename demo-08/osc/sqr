@@ -1,0 +1,9 @@
+#ifndef SQR
+#define SQR # 1 #
+
+opcode Sqr, a, kk
+  kAmp, kCps xin
+  xout vco2(kAmp, kCps, 10)
+endop
+
+#end

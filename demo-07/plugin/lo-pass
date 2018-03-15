@@ -1,0 +1,12 @@
+#ifndef LO_PASS
+#define LO_PASS # 1 #
+
+opcode LoPass, a, aki
+  aSig, kCut, iRes xin
+
+  aSig moogladder aSig, kCut, iRes
+
+  xout aSig
+endop
+
+#end

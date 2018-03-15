@@ -1,0 +1,24 @@
+#include "osc/sin"
+#include "util/adsr"
+#include "util/amp-midi-velo"
+#include "util/cps-midi-note"
+
+instr Kick
+  iDur = p3
+  iMidiVelo = p4
+  iMidiNote = p5
+
+  iDbRange = 24
+  iAmp AmpMidiVelo iMidiVelo, iDbRange
+
+  iMinMidiNote = 28
+  iMaxMidiNote = 63
+  iCps CpsMidiNote iMidiNote, iMinMidiNote, iMaxMidiNote
+
+  kAmpEnv Adsr 0, iDur, 0, 0.1
+  kCpsEnv = 1 + 3 * Adsr(0, 0.15, 0, 0.1)
+  aSin Sin iAmp * kAmpEnv, iCps * kCpsEnv, $HARD_OSC_START
+
+  iSendLevel = 0
+  ToMainMixBus aSin, aSin, iSendLevel
+endin

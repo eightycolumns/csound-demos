@@ -1,0 +1,12 @@
+gkBuzzerLoPassCutoff init 40
+
+instr BuzzerLoPassCutoff
+  iDur = p3
+
+  iA = p4
+  iB = p5
+
+  iType = p6
+
+  gkBuzzerLoPassCutoff transeg iA, iDur, iType, iB
+endin

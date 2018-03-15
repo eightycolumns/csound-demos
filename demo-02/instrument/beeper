@@ -1,0 +1,18 @@
+#include "plugin/adsr-env"
+
+instr beeper
+  iDur = p3
+  iAmp = p4
+  iCps = p5
+
+  aSin oscil iAmp, iCps, giSin, $HARD_OSC_START
+
+  iA = 0.01
+  iD = 0.09
+  iS = 0.75
+  iR = 0.2
+
+  kAmpEnv AdsrEnv iA, iD, iS, iR
+
+  outs aSin * kAmpEnv, aSin * kAmpEnv
+endin

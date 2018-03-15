@@ -1,0 +1,28 @@
+#ifndef PLUCK_DELAY_BUS
+#define PLUCK_DELAY_BUS # 1 #
+
+#include "plugin/gain"
+
+gaPluckDelayBusL init 0
+gaPluckDelayBusR init 0
+
+opcode ToPluckDelayBus, 0, aai
+  aInL, aInR, iSendLevel xin
+
+  aInL, aInR Gain aInL, aInR, iSendLevel
+
+  gaPluckDelayBusL += aInL
+  gaPluckDelayBusR += aInR
+endop
+
+opcode FromPluckDelayBus, aa, 0
+  aOutL = gaPluckDelayBusL
+  aOutR = gaPluckDelayBusR
+
+  gaPluckDelayBusL = 0
+  gaPluckDelayBusR = 0
+
+  xout aOutL, aOutR
+endop
+
+#end

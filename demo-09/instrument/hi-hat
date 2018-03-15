@@ -1,0 +1,63 @@
+#include "bus/hi-hat-delay"
+#include "bus/main-mix"
+#include "bus/short-reverb"
+#include "osc/operator"
+#include "plugin/gain"
+#include "plugin/hi-pass"
+#include "plugin/moog-ladder"
+#include "plugin/stereo-width"
+#include "util/amp-midi-velo"
+#include "util/cps-midi-note"
+#include "util/index"
+
+instr HiHat
+  iDuration = p3
+  iMidiVelo = p4
+  iMidiNote = p5
+
+  iOpen = p6
+
+  iAmp AmpMidiVelo iMidiVelo, 24
+  iCps CpsMidiNote iMidiNote, 36, 96
+
+  iCpsL = iCps * cent(-10)
+  aModulatorL Operator iCpsL * 1.4, a(0), 0
+  aModulatorL *= Index(10)
+  aCarrierL Operator iCpsL, aModulatorL, 0
+  aCarrierL *= iAmp
+
+  iCpsR = iCps * cent(+10)
+  aModulatorR Operator iCpsR * 1.4, a(0), 0
+  aModulatorR *= Index(10)
+  aCarrierR Operator iCpsR, aModulatorR, 0
+  aCarrierR *= iAmp
+
+  aNoiseFeedbackL init 0
+  aNoiseL Operator iCps * cent(-1), aNoiseFeedbackL, 0
+  aNoiseFeedbackL = aNoiseL * Index(100)
+  aNoiseL *= iAmp
+
+  aNoiseFeedbackR init 0
+  aNoiseR Operator iCps * cent(+1), aNoiseFeedbackR, 0
+  aNoiseFeedbackR = aNoiseR * Index(100)
+  aNoiseR *= iAmp
+
+  if (iOpen == 0) then                    // Closed
+    kBodyEnv  transeg 1, iDuration, -9, 0
+    kNoiseEnv transeg 1, iDuration, -9, 0
+  else                                    // Open
+    kBodyEnv  transeg 1, iDuration, -3, 0
+    kNoiseEnv transeg 1, iDuration, -3, 0
+  endif
+
+  aHiHatL = aCarrierL * kBodyEnv + aNoiseL * kNoiseEnv
+  aHiHatR = aCarrierR * kBodyEnv + aNoiseR * kNoiseEnv
+
+  aHiHatL, aHiHatR HiPass aHiHatL, aHiHatR, 1000
+  aHiHatL, aHiHatR StereoWidth aHiHatL, aHiHatR, 1
+  aHiHatL, aHiHatR Gain aHiHatL, aHiHatR, -21
+
+  ToHiHatDelayBus aHiHatL, aHiHatR, 0
+  ToShortReverbBus aHiHatL, aHiHatR, -12
+  ToMainMixBus aHiHatL, aHiHatR, 0
+endin

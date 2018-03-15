@@ -1,0 +1,12 @@
+#ifndef AMP_MIDI_VELO
+#define AMP_MIDI_VELO # 1 #
+
+opcode AmpMidiVelo, i, ii
+  iMidiVelo, iDbRange xin
+
+  iAmp ampdbfs 0 - iDbRange * (1 - iMidiVelo / $MAX_MIDI_VELO)
+
+  xout iAmp
+endop
+
+#end

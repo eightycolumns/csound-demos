@@ -1,0 +1,55 @@
+#include "bus/main-mix"
+#include "bus/short-reverb"
+#include "osc/operator"
+#include "osc/saw"
+#include "osc/sin"
+#include "plugin/hi-pass"
+#include "plugin/moog-ladder"
+#include "plugin/stereo-width"
+#include "util/amp-midi-velo"
+#include "util/cps-midi-note"
+#include "util/index"
+
+instr Kick
+  iDuration = p3
+  iMidiVelo = p4
+  iMidiNote = p5
+
+  iAmp AmpMidiVelo iMidiVelo, 24
+  iCps CpsMidiNote iMidiNote, 28, 63
+
+  kAmpEnv transeg 1, iDuration, -1, 0
+  kCpsEnv transeg 4, iDuration, -9, 1
+
+  aSin Sin iAmp * kAmpEnv, iCps * kCpsEnv, 0.25
+
+  aSaw Saw iAmp * kAmpEnv, iCps * 2 * kCpsEnv, 0
+  aSaw, aSaw MoogLadder aSaw, aSaw, iCps * 2 * kCpsEnv, 0
+
+  aNoiseFeedbackL init 0
+  aNoiseL Operator iCps * cent(-1), aNoiseFeedbackL, 0
+  aNoiseFeedbackL = aNoiseL * Index(100)
+  aNoiseL *= iAmp
+
+  aNoiseFeedbackR init 0
+  aNoiseR Operator iCps * cent(+1), aNoiseFeedbackR, 0
+  aNoiseFeedbackR = aNoiseR * Index(100)
+  aNoiseR *= iAmp
+
+  kNoiseEnv transeg 1, iDuration, -9, 0
+
+  aNoiseL *= kNoiseEnv
+  aNoiseR *= kNoiseEnv
+
+  aNoiseL, aNoiseR MoogLadder aNoiseL, aNoiseR, 8000, 0.1
+
+  aKickL = aSin + aSaw + aNoiseL / 10
+  aKickR = aSin + aSaw + aNoiseR / 10
+
+  aKickL, aKickR HiPass aKickL, aKickR, 40
+
+  aKickL, aKickR StereoWidth aKickL, aKickR, 0.5
+
+  ToShortReverbBus aKickL, aKickR, -12
+  ToMainMixBus aKickL, aKickR, 0
+endin

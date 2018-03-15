@@ -1,0 +1,72 @@
+#include "bus/long-reverb"
+#include "bus/main-mix"
+#include "bus/pluck-delay"
+#include "osc/operator"
+#include "plugin/hi-pass"
+#include "plugin/stereo-width"
+#include "util/amp-midi-velo"
+#include "util/cps-midi-note"
+#include "util/index"
+
+gkPluckGainAutomation init 0
+
+instr Pluck
+  iDuration = p3
+  iMidiVelo = p4
+  iMidiNote = p5
+
+  iAmp AmpMidiVelo iMidiVelo, 24
+  iCps CpsMidiNote iMidiNote, 36, 96
+
+  iAttack = 0.01
+  iDecay = 0.99
+  iRelease = 0.25
+
+  kAmpEnv transegr 0, iAttack, -1, 1, iDecay, -9, 0, iRelease, -1, 0
+  kCpsEnv transegr 4, iAttack, -1, 1, iDecay, -9, 1, iRelease, -1, 1
+  kModEnv transegr 1, iAttack, -1, 1, iDecay, -9, 0, iRelease, -1, 0
+
+  iOscStart = 0
+
+  aModulator Operator iCps * 2 * kCpsEnv, a(0), iOscStart
+  aModulator *= Index(0.25) * kModEnv
+
+  iDetune = 5
+
+  iDetuneL cent -iDetune
+  iDetuneR cent +iDetune
+
+  aFeedbackL init 0
+  aPluckL Operator iCps * iDetuneL * kCpsEnv, aModulator + aFeedbackL, iOscStart
+  aFeedbackL = aPluckL * Index(0.5) * kModEnv
+  aPluckL *= iAmp
+
+  aFeedbackR init 0
+  aPluckR Operator iCps * iDetuneR * kCpsEnv, aModulator + aFeedbackR, iOscStart
+  aFeedbackR = aPluckR * Index(0.5) * kModEnv
+  aPluckR *= iAmp
+
+  aPluckL *= kAmpEnv
+  aPluckR *= kAmpEnv
+
+  iGain = -12
+
+  aPluckL, aPluckR Gain aPluckL, aPluckR, iGain + gkPluckGainAutomation
+  aPluckL, aPluckR HiPass aPluckL, aPluckR, 250
+  aPluckL, aPluckR StereoWidth aPluckL, aPluckR, 1
+
+  ToLongReverbBus aPluckL, aPluckR, 0
+  ToMainMixBus aPluckL, aPluckR, 0
+  ToPluckDelayBus aPluckL, aPluckR, 0
+endin
+
+instr PluckGainAutomation
+  iDuration = p3
+
+  iA = p4
+  iB = p5
+
+  iCurve = p6
+
+  gkPluckGainAutomation transeg iA, iDuration, iCurve, iB
+endin

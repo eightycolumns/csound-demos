@@ -1,0 +1,25 @@
+#include "bus/pluck-delay"
+#include "bus/main-mix"
+#include "plugin/delay"
+#include "plugin/lo-pass"
+#include "plugin/stereo-width"
+
+alwayson "PluckDelay"
+
+instr PluckDelay
+  aDryL, aDryR FromPluckDelayBus
+
+  iN = 2
+  iDelayGain = -12
+  iDelayTime = $EIGHTH_NOTE * 1.5
+
+  aVoid = 0
+
+  aWetL, aVoid Delay aDryL, aDryR, iN, iDelayGain, iDelayTime - 0.005
+  aVoid, aWetR Delay aDryL, aDryR, iN, iDelayGain, iDelayTime + 0.005
+
+  aWetL, aWetR StereoWidth aWetL, aWetR, 1
+
+  ToLongReverbBus aWetL, aWetR, -12
+  ToMainMixBus aWetL, aWetR, 0
+endin

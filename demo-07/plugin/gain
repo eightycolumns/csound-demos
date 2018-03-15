@@ -1,0 +1,9 @@
+#ifndef GAIN
+#define GAIN # 1 #
+
+opcode Gain, a, ak
+  aSignal, kGain xin
+  xout aSignal * ampdbfs(kGain) / 0dbfs
+endop
+
+#end

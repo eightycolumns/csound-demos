@@ -1,0 +1,4 @@
+{ 64 BEATS
+
+  i "Kick" [ 64 + $BEATS ] 1 64 33
+}

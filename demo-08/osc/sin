@@ -1,0 +1,9 @@
+#ifndef SIN
+#define SIN # 1 #
+
+opcode Sin, a, kki
+  kAmp, kCps, iOscStart xin
+  xout oscil(kAmp, kCps, giSinFt, iOscStart)
+endop
+
+#end

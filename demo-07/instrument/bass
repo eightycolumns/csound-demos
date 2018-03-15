@@ -1,0 +1,37 @@
+#include "bus/main-mix"
+#include "osc/saw"
+#include "osc/sin"
+#include "plugin/gain"
+#include "plugin/lo-pass"
+#include "util/adsr"
+#include "util/amp-midi-velo"
+#include "util/cps-midi-note"
+
+instr Bass
+  iDur = p3
+  iMidiVelo = p4
+  iMidiNote = p5
+
+  iDbRange = 24
+  iAmp AmpMidiVelo iMidiVelo, iDbRange
+
+  iMinMidiNote = 28
+  iMaxMidiNote = 63
+  iCps CpsMidiNote iMidiNote, iMinMidiNote, iMaxMidiNote
+
+  aSaw Saw iAmp, iCps
+  aSin Sin iAmp, iCps, $SOFT_OSC_START
+
+  aBass = aSaw + aSin
+
+  kAmpEnv Adsr 0.01, 0.09, 0.50, 0.2
+  aBass *= kAmpEnv
+
+  kCutEnv Adsr 0, iDur, 0.25, 0.2
+  aBass LoPass aBass, 4000 * kCutEnv, 0.1
+
+  aBass Gain aBass, -18 * gkPulse
+
+  iSendLevel = 0
+  ToMainMixBus aBass, aBass, iSendLevel
+endin

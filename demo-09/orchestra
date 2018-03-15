@@ -1,0 +1,37 @@
+#define TWO_PI # ($M_PI * 2) #
+
+#define MIN_MIDI_NOTE # 0 #
+#define MAX_MIDI_NOTE # 127 #
+
+#define MIN_MIDI_VELO # 0 #
+#define MAX_MIDI_VELO # 127 #
+
+#define BPM # 128 #
+
+#define QUARTER_NOTE # (60 / $BPM) #
+
+#define WHOLE_NOTE # ($QUARTER_NOTE * 4) #
+#define HALF_NOTE # ($QUARTER_NOTE * 2) #
+
+#define EIGHTH_NOTE # ($QUARTER_NOTE / 2) #
+#define SIXTEENTH_NOTE # ($EIGHTH_NOTE / 2) #
+
+nchnls = 2
+
+giSinFt ftgenonce 0, 0, pow(2, 16), 10, 1
+
+gkPulse init 0
+
+#include "instrument/automation"
+
+#include "instrument/bass"
+#include "instrument/hi-hat"
+#include "instrument/kick"
+#include "instrument/metronome"
+#include "instrument/pad"
+
+#include "aux/hi-hat-delay"
+#include "aux/long-reverb"
+#include "aux/short-reverb"
+
+#include "aux/main-mix"

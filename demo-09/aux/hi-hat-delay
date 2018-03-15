@@ -1,0 +1,21 @@
+#include "bus/hi-hat-delay"
+#include "bus/short-reverb"
+#include "plugin/delay"
+#include "plugin/stereo-width"
+
+alwayson "HiHatDelay"
+
+instr HiHatDelay
+  aDryL, aDryR FromHiHatDelayBus
+
+  iN = 1
+  iDelayGain = -18
+  iDelayTime = $SIXTEENTH_NOTE
+
+  aWetL, aWetR Delay aDryL, aDryR, iN, iDelayGain, iDelayTime
+
+  aWetL, aWetR StereoWidth aWetL, aWetR, 1
+
+  ToShortReverbBus aWetL, aWetR, -12
+  ToMainMixBus aWetL, aWetR, 0
+endin

@@ -1,0 +1,10 @@
+#ifndef ADSR_ENV
+#define ADSR_ENV # 1 #
+
+opcode AdsrEnv, k, iiii
+  iAttack, iDecay, iSustain, iRelease xin
+  kAdsrEnv transegr 0, iAttack, 3, 1, iDecay, -3, iSustain, iRelease, -3, 0
+  xout kAdsrEnv
+endop
+
+#end

@@ -1,0 +1,37 @@
+#include "bus/long-reverb"
+#include "bus/main-mix"
+#include "osc/operator"
+#include "plugin/gain"
+#include "plugin/hi-pass"
+#include "plugin/moog-ladder"
+#include "util/amp-midi-velo"
+#include "util/cps-midi-note"
+#include "util/index"
+
+instr Bass
+  iDuration = p3
+  iMidiVelo = p4
+  iMidiNote = p5
+
+  iAmp AmpMidiVelo iMidiVelo, 24
+  iCps CpsMidiNote iMidiNote, 28, 63
+
+  iAttack = 0.01
+  iDecay = 0.99
+  iRelease = 0.25
+
+  kAmpEnv transegr 0, iAttack, -3, 1, iDecay, -3, 0.9, iRelease, -3, 0
+  kModEnv transegr 1, iAttack, -3, 1, iDecay, -3, 0.9, iRelease, -3, 0
+
+  aFeedback init 0
+  aBass Operator iCps, aFeedback, 0
+  aFeedback = aBass * Index(1.5) * kModEnv
+  aBass *= iAmp * kAmpEnv
+
+  aBass, aBass HiPass aBass, aBass, gkHiPassCutoff
+  aBass, aBass MoogLadder aBass, aBass, gkLoPassCutoff, 0.1
+
+  aBass, aBass Gain aBass, aBass, gkPulse * gkPulseDepth - 3
+  ToLongReverbBus aBass, aBass, 0
+  ToMainMixBus aBass, aBass, 0
+endin

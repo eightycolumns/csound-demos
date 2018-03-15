@@ -1,0 +1,6 @@
+;               Start   Duration
+
+{ 16 BEAT
+
+  i "Metronome"   $BEAT          1
+}

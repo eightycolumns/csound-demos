@@ -1,0 +1,32 @@
+#include "plugin/adsr-env"
+#include "util/cps-midi-note"
+#include "util/dbfs-midi-velo"
+
+instr buzzer
+  iDur = p3
+  iMidiVelo = p4
+  iMidiNote = p5
+
+  iDbRange = 24
+  iDbfs DbfsMidiVelo iMidiVelo, iDbRange
+  iGain = 0
+  iDbfs += iGain
+  iAmp ampdbfs iDbfs
+
+  iMinMidiNote = 36
+  iMaxMidiNote = 96
+
+  if (iMidiNote < iMinMidiNote || iMidiNote > iMaxMidiNote) then
+    iCps = 0
+  else
+    iCps CpsMidiNote iMidiNote
+  endif
+
+  aSaw vco2 iAmp, iCps, 0, 0
+
+  kAmpEnv AdsrEnv 0.01, 0.1, 0.75, 0.2
+  kLpEnv AdsrEnv 0.001, 0.1, 0.25, 0.2
+  aOut moogladder aSaw * kAmpEnv, iCps * 8 * kLpEnv, 0
+
+  outs aOut, aOut
+endin

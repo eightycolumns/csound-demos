@@ -1,0 +1,16 @@
+#include "bus/main-mix"
+#include "bus/short-reverb"
+
+alwayson "Short Reverb"
+
+instr ShortReverb
+  aDryL, aDryR FromShortReverbBus
+
+  denorm aDryL
+  denorm aDryR
+
+  aWetL, aWetR freeverb aDryL, aDryR, 0.25, 1, sr
+
+  iSendLevel = 0
+  ToMainMixBus aWetL, aWetR, iSendLevel
+endin

@@ -1,0 +1,34 @@
+/*
+instr Buzzer
+  iDur = p3
+  iMidiVelo = p4
+  iMidiNote = p5
+
+  iDbRange = 24
+  iGain = 0
+  iMinMidiNote = 0
+  iMaxMidiNote = 127
+  iDetune = 5
+
+  iDbfs = DbfsMidiVelo(iMidiVelo, iDbRange)
+  iAmp = AmpDbfs(iDbfs + iGain)
+  iCps = CpsMidiNote(iMidiNote, iMinMidiNote, iMaxMidiNote)
+
+  aSaw = Saw(iAmp, iCps, $SOFT_OSC_START)
+
+  aSawL = Saw(iAmp, iCps * 2 * cent(-iDetune), $RAND_OSC_START)
+  aSawR = Saw(iAmp, iCps * 2 * cent(+iDetune), $RAND_OSC_START)
+
+  kAmpEnv Adsr 0.025, 0.25, 0.5, 0.25
+
+  aOutL = (aSaw / 2 + aSawL / 2) * kAmpEnv
+  aOutR = (aSaw / 2 + aSawR / 2) * kAmpEnv
+
+  kLpEnv transegr 16000, iDur, -3, i(gkBuzzerLoPassCutoff), 0.25, -3, 0
+
+  aOutL moogladder aOutL, gkBuzzerLoPassCutoff, 0.1
+  aOutR moogladder aOutR, gkBuzzerLoPassCutoff, 0.1
+
+  outs aOutL, aOutR
+endin
+*/

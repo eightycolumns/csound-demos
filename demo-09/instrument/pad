@@ -1,0 +1,54 @@
+#include "bus/long-reverb"
+#include "bus/main-mix"
+#include "osc/operator"
+#include "plugin/gain"
+#include "plugin/hi-pass"
+#include "plugin/moog-ladder"
+#include "util/amp-midi-velo"
+#include "util/cps-midi-note"
+#include "util/index"
+
+instr Pad
+  iDuration = p3
+  iMidiVelo = p4
+  iMidiNote = p5
+
+  iAmp AmpMidiVelo iMidiVelo, 24
+  iCps CpsMidiNote iMidiNote, 36, 96
+
+  iAttack = 0.01
+  iDecay = 0.99
+  iRelease = 0.25
+
+  kAmpEnv transegr 0, iAttack, -3, 1, iDecay, -3, 0.9, iRelease, -3, 0
+  kModEnv transegr 1, iAttack, -3, 1, iDecay, -3, 0.9, iRelease, -3, 0
+
+  iDetune = 5
+
+  iDetuneL cent -iDetune
+  iDetuneR cent +iDetune
+
+  iModulationIndex Index 0.5
+  iFeedbackIndex Index 1.5
+
+  aModulatorL Operator iCps * 2 * iDetuneL, a(0), 0
+  aModulatorL *= iModulationIndex * kModEnv
+  aFeedbackL init 0
+  aPadL Operator iCps * iDetuneL, aModulatorL + aFeedbackL, 0
+  aFeedbackL = aPadL * iFeedbackIndex * kModEnv
+  aPadL *= iAmp * kAmpEnv
+
+  aModulatorR Operator iCps * 2 * iDetuneR, a(0), 0
+  aModulatorR *= iModulationIndex * kModEnv
+  aFeedbackR init 0
+  aPadR Operator iCps * iDetuneR, aModulatorR + aFeedbackR, 0
+  aFeedbackR = aPadR * iFeedbackIndex * kModEnv
+  aPadR *= iAmp * kAmpEnv
+
+  aPadL, aPadR HiPass aPadL, aPadR, gkHiPassCutoff
+  aPadL, aPadR MoogLadder aPadL, aPadR, gkLoPassCutoff, 0.1
+
+  aPadL, aPadR Gain aPadL, aPadR, gkPulse * gkPulseDepth - 6
+  ToLongReverbBus aPadL, aPadR, 0
+  ToMainMixBus aPadL, aPadR, 0
+endin
